@@ -1,0 +1,7 @@
+import { BaseService } from "./BaseService";
+
+export class ServiceName extends BaseService {
+  static get entity () {
+    return 'your-entity-example-users'
+  }
+}

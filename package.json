@@ -1,0 +1,49 @@
+{
+  "name": "vue-for-laravel-boilerplate",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@vueuse/core": "^10.11.1",
+    "axios": "^1.7.3",
+    "filepond": "^4.31.2",
+    "filepond-plugin-file-validate-size": "^2.2.8",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-crop": "^2.0.6",
+    "filepond-plugin-image-edit": "^1.6.3",
+    "filepond-plugin-image-exif-orientation": "^1.0.11",
+    "filepond-plugin-image-preview": "^4.6.12",
+    "filepond-plugin-image-resize": "^2.0.10",
+    "filepond-plugin-image-transform": "^3.8.7",
+    "flowbite": "^2.5.1",
+    "pinia": "^2.2.2",
+    "vue": "^3.4.31",
+    "vue-filepond": "^7.0.4",
+    "vue-router": "^4.4.2"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.6.1",
+    "@storybook/addon-essentials": "^8.2.7",
+    "@storybook/addon-interactions": "^8.2.7",
+    "@storybook/addon-links": "^8.2.7",
+    "@storybook/addon-onboarding": "^8.2.7",
+    "@storybook/blocks": "^8.2.7",
+    "@storybook/test": "^8.2.7",
+    "@storybook/vue3": "^8.2.7",
+    "@storybook/vue3-vite": "^8.2.7",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.40",
+    "storybook": "^8.2.7",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.3.4"
+  }
+}
