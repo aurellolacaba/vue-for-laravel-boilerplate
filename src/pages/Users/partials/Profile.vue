@@ -13,16 +13,19 @@
                         id="middleName"
                         type="text"
                         optional
+                        v-model="form.middleName"
                     ></BaseInput>
                     <BaseInput
                         label="Last Name"
                         id="lastName"
                         type="text"
+                        v-model="form.lastName"
                     ></BaseInput>
                     <BaseInput
                         label="Email"
                         id="email"
                         type="text"
+                        v-model="form.email"
                     ></BaseInput>
                     
                 </div>
@@ -50,6 +53,7 @@
                     </div>
                 </div>
             </form>
+            <!-- <pre>{{ form }}</pre> -->
         </div>
 </template>
 
@@ -57,15 +61,40 @@
 import { BaseInput } from '@components/ui'
 import { useForm } from '../../../composables/useForm';
 import { useUserStore } from '../../../stores/UserStore';
+import { storeToRefs } from 'pinia';
+import { watch } from 'vue';
+import { UserService } from '../../../services/UserService';
+import { useToastStore } from '../../../stores/ToastStore';
 
 const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const toastStore = useToastStore()
 
 const form = useForm({
-    firstName: 'Cleveland',
-    middleName: 'asdasd',
+    firstName: '',
+    middleName: '',
     lastName: '',
     email: '',
-    fileId: null,
-    fileName: null
 })
+
+watch(user, (newValue) => {
+  if (newValue) {
+    form.firstName = newValue.first_name
+    form.middleName = newValue.middleName
+    form.lastName = newValue.last_name
+    form.email = newValue.email
+  }
+}, { immediate: true })
+
+const handleSubmit = async () => {
+    try {
+        await UserService.update(user.value.id, form)
+        toastStore.new({
+            type: 'success',
+            message: 'Updated Succesfuly'
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
 </script>

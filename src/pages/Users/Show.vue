@@ -1,19 +1,21 @@
 <template>
-    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+    <div v-if="isLoading" class="dark:text-white">Loading...</div>
+
+    <div v-else class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="flex items-center space-x-4 p-4">
             <!-- Avatar -->
             <img
-                src="https://i.pravatar.cc/150?u=fake@pravatar.com"
+                :src="`https://i.pravatar.cc/150?u=fake${user?.id}@pravatar.com`"
                 alt="User Avatar"
                 class=" w-32 h-32 rounded-full"
             />
 
             <!-- User Info -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-500 dark:text-gray-300">
-                    {{ user.user.data?.first_name }} {{ user.user.data?.last_name }}
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-300">
+                    {{ user?.first_name }} {{ user?.last_name }}
                 </h2>
-                <p class="text-sm text-gray-500">john.doe@example.com</p>
+                <p class="text-sm text-gray-500">{{ user?.email }}</p>
             </div>
         </div>
         <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
@@ -44,10 +46,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { UserService } from '../../services/UserService';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useErrorHandler } from '../../composables/useErrorHandler';
 import { useUserStore } from '../../stores/UserStore';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps({
     id: {
@@ -57,15 +59,15 @@ const props = defineProps({
 })
 
 const { handleApiError } = useErrorHandler()
-const user = useUserStore()
+const userStore = useUserStore()
+const { isLoading, user } = storeToRefs(userStore)
 
 onMounted( async () => {
     try {
-        const response = await UserService.getById(props.id)
-        user.user = response.data
+        await userStore.getById(props.id)
     } catch (error) {
-        console.log(error)
         handleApiError(error)
     }
 })
+
 </script>

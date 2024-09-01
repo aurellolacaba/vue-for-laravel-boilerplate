@@ -18,6 +18,7 @@ export class AuthService {
             
             return new ResponseWrapper(response, response.data);
         } catch (error) {
+            // throw error.response
             throw new ErrorWrapper(error);
         }
     }
@@ -31,6 +32,16 @@ export class AuthService {
             throw new ErrorWrapper(error);
         }
         
+    }
+
+    static async fetchUser() {
+        try {
+            const response = await new Http({auth: true}).get('users/me')
+
+            return new ResponseWrapper(response, response.data.data)
+        } catch (error) {
+            throw new ErrorWrapper(error);
+        } 
     }
 
     static getBearer(){

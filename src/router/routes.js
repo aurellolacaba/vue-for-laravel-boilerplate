@@ -67,6 +67,9 @@ export const routes = [
             layout: 'Authenticated',
             requiresAuth: true
         },
+        redirect: {
+            name: 'userProfile'
+        },
         children: [
             {
                 path: 'profile',

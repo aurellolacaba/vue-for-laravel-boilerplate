@@ -8,7 +8,7 @@
             <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Sign in to your account {{ token }}
+                        Sign in to your account
                     </h1>
                     <form class="space-y-4 md:space-y-6" @submit.prevent="handleSubmit">
                         <div>
@@ -19,13 +19,13 @@
                                 id="email" 
                                 :class="[
                                     'bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                                    errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300'
+                                    form.errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300'
                                 ]" 
                                 placeholder="name@company.com"
-                                v-model="email"
+                                v-model="form.fields.email"
                                 autofocus
                             >
-                            <span v-if="errors.email" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.email[0] }}</span>
+                            <span v-if="form.errors.email" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.errors.email[0] }}</span>
                         </div>
                         <div>
                             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
@@ -35,11 +35,11 @@
                                 id="password"
                                 :class="[
                                     'bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                                    errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300'
+                                    form.errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300'
                                 ]"                            
-                                v-model="password"
+                                v-model="form.fields.password"
                             >
-                            <span v-if="errors.password" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.password[0] }}</span>
+                            <span v-if="form.errors.password" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.errors.password[0] }}</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-start">
@@ -55,7 +55,7 @@
 
 
                         <button 
-                            v-if="isProcessing"
+                            v-if="form.isProcessing"
                             disabled 
                             type="button" 
                             class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
@@ -68,7 +68,10 @@
                         </button>
 
 
-                        <button v-else type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>
+                        <button 
+                            v-else type="submit"
+                            class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                        >Sign in {{ !form.isDirty }}</button>
                         <!-- <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                             Don’t have an account yet? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
                         </p> -->
@@ -80,38 +83,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { AuthService } from '../services/AuthService';
 import { useRouter } from 'vue-router';
-import { useLocalStorage } from '@vueuse/core';
+import { useAuthStore } from '../stores/AuthStore';
+import { useForm } from '../composables/useForm';
+import { onMounted } from 'vue';
 
-const token = useLocalStorage('access_token')
 const router = useRouter()
+const authStore = useAuthStore()
 
-const isProcessing = ref(false)
-const email = ref('')
-const password = ref('')
-const errors = ref('')
+const form = useForm({
+    email: '',
+    password: ''
+})
+
+onMounted(() => {
+    setTimeout(() => {
+        form.setDefaults({
+        
+            email: 'aurellolacaba@gmail.com',
+            password: ''
+            
+        })
+    }, 3000)
+    
+})
 
 const handleSubmit = async () => {
-    try {
-        isProcessing.value = true
-        const response = await AuthService.login({
-            email: email.value,
-            password: password.value
-        });
-        errors.value = '';
-        router.push('/dashboard');
-    } catch (error) {
-        errors.value = error.errors;
-    } finally {
-        password.value = '';
-        isProcessing.value = false
-    }
-}
-</script>
 
-<style scoped>
-/* Scoped styles specific to this component */
-</style>
+    form.submit(async (fields) => {
+            await authStore.login(fields)
+        },
+        {
+            onFinish: () => form.reset('password'),
+            onSuccess: () => router.push('/dashboard')
+        }
+    )
+    
+}
+
+</script>
   

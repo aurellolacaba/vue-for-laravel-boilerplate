@@ -616,11 +616,11 @@
             <div class="py-3 px-4">
               <span
                 class="block text-sm font-semibold text-gray-900 dark:text-white"
-                >Neil Sims</span
+                >{{ authStore?.user?.first_name}} {{ authStore?.user?.last_name}}</span
               >
               <span
                 class="block text-sm text-gray-900 truncate dark:text-white"
-                >name@flowbite.com</span
+                >{{ authStore?.user?.email}}</span
               >
             </div>
             <ul
@@ -741,6 +741,9 @@
 <script setup>
 import { onBeforeMount, onMounted } from 'vue';
 import { AuthService } from '../../services/AuthService';
+import { useAuthStore } from '../../stores/AuthStore';
+
+const authStore = useAuthStore()
 
 onMounted(() => {
   var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
